@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -32,6 +33,14 @@ namespace Restablecer_contrasena
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            // Autenticación mediante cookies:
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options => {
+                    options.LoginPath = new PathString("/Cuentas/IniciarSesion");
+                    //options.LogoutPath = new PathString("/Auth/Login");
+                    options.AccessDeniedPath = "/Cuentas/AccessDenied";
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,6 +57,9 @@ namespace Restablecer_contrasena
 
             app.UseStaticFiles();
             app.UseCookiePolicy();
+
+            // Autenticación mediante cookies:
+            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {
